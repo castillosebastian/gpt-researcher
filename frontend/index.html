@@ -13,17 +13,24 @@
     <link rel="stylesheet" href="/site/styles.css" />
     <style>
         :root {
-            --color-sand: #fcf7ec;       /* Color arena suave para el fondo */
-            --color-sand-dark: #e6d5c3;  /* Arena más oscuro para elementos secundarios */
-            --color-gray-light: #f4f4f4; /* Gris claro para elementos de formulario */
-            --color-gray-medium: #666666;/* Gris medio para texto */
-            --color-gray-dark: #444444;  /* Gris oscuro para encabezados */
-            --color-gray-button: #8c8c8c; /* Nuevo color gris para el botón principal */
+            --color-dark: #212A31;      /* Color más oscuro - para textos principales */
+            --color-medium: #2E3944;    /* Color medio oscuro - para elementos secundarios */
+            --color-accent: #124E66;    /* Color acento - para botones y elementos destacados */
+            --color-neutral: #748D92;   /* Color neutral - para elementos de interfaz */
+            --color-light: #D3D9D4;     /* Color claro - para fondos y elementos sutiles */
+            
+            /* Reemplazando las variables anteriores */
+            --color-sand: var(--color-light);
+            --color-sand-dark: var(--color-neutral);
+            --color-gray-light: var(--color-light);
+            --color-gray-medium: var(--color-medium);
+            --color-gray-dark: var(--color-dark);
+            --color-gray-button: var(--color-accent);
         }
 
         body {
-            background-color: var(--color-sand);
-            color: var(--color-gray-dark);
+            background-color: var(--color-light);
+            color: var(--color-dark);
         }
 
         .avatar {
@@ -34,28 +41,26 @@
         }
 
         .form-control {
-            background-color: var(--color-gray-light);
-            border: 1px solid var(--color-sand-dark);
-            color: var(--color-gray-dark);
+            background-color: white;
+            border: 1px solid var(--color-neutral);
+            color: var(--color-dark);
         }
 
         .form-control:focus {
-            background-color: white;
-            border-color: var(--color-gray-medium);
-            box-shadow: 0 0 0 0.2rem rgba(102, 102, 102, 0.25);
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 0.2rem rgba(18, 78, 102, 0.25);
         }
 
         .btn-primary {
-            background-color: var(--color-gray-button);
-            border-color: var(--color-gray-button);
+            background-color: var(--color-accent);
+            border-color: var(--color-accent);
             color: white;
-            transition: all 0.3s ease;
         }
 
         .btn-primary:hover {
-            background-color: #7a7a7a;
-            border-color: #7a7a7a;
-            color: white;
+            background-color: var(--color-medium);
+            border-color: var(--color-medium);
+            color: var(--color-light);
         }
 
         .btn-primary:focus {
@@ -63,15 +68,15 @@
         }
 
         .btn-secondary {
-            background-color: var(--color-sand-dark);
-            border-color: var(--color-sand-dark);
-            color: var(--color-gray-dark);
+            background-color: var(--color-neutral);
+            border-color: var(--color-neutral);
+            color: white;
         }
 
         .btn-secondary:hover {
-            background-color: #d8c4b1;
-            border-color: #d8c4b1;
-            color: var(--color-gray-dark);
+            background-color: var(--color-medium);
+            border-color: var(--color-medium);
+            color: var(--color-light);
         }
 
         .margin-div {
@@ -83,14 +88,14 @@
         }
 
         .agent-question {
-            color: var(--color-gray-dark);
+            color: var(--color-dark);
             font-weight: 500;
         }
 
         .alert-info {
             background-color: var(--color-gray-light);
             border-color: var(--color-sand-dark);
-            color: var(--color-gray-dark);
+            color: var(--color-dark);
         }
 
         .agent-name {
