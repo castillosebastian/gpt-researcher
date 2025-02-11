@@ -115,27 +115,10 @@ def sanitize_filename(filename: str) -> str:
     return re.sub(r"[^\w\s-]", "", sanitized).strip()
 
 
-async def handle_start_command(websocket, data: str, manager):
+async def handle_start_command(websocket, data: str, manager, logs_handler):
     json_data = json.loads(data[6:])
-    task, report_type, source_urls, document_urls, tone, headers, report_source = extract_command_data(
-        json_data)
-
-    if not task or not report_type:
-        print("Error: Missing task or report_type")
-        return
-
-    # Create logs handler with websocket and task
-    logs_handler = CustomLogsHandler(websocket, task)
-    # Initialize log content with query
-    await logs_handler.send_json({
-        "query": task,
-        "sources": [],
-        "context": [],
-        "report": ""
-    })
-
-    sanitized_filename = sanitize_filename(f"task_{int(time.time())}_{task}")
-
+    task, report_type, source_urls, document_urls, tone, headers, report_source = extract_command_data(json_data)
+    
     report = await manager.start_streaming(
         task, 
         report_type, 
@@ -147,8 +130,7 @@ async def handle_start_command(websocket, data: str, manager):
         headers
     )
     report = str(report)
-    file_paths = await generate_report_files(report, sanitized_filename)
-    # Add JSON log path to file_paths
+    file_paths = await generate_report_files(report, sanitize_filename(f"task_{int(time.time())}_{task}"))
     file_paths["json"] = os.path.relpath(logs_handler.log_file)
     await send_file_paths(websocket, file_paths)
 
@@ -236,15 +218,27 @@ async def execute_multi_agents(manager) -> Any:
 
 async def handle_websocket_communication(websocket, manager):
     while True:
-        data = await websocket.receive_text()
-        if data.startswith("start"):
-            await handle_start_command(websocket, data, manager)
-        elif data.startswith("human_feedback"):
-            await handle_human_feedback(data)
-        elif data.startswith("chat"):
-            await handle_chat(websocket, data, manager)
-        else:
-            print("Error: Unknown command or not enough parameters provided.")
+        try:
+            data = await websocket.receive_text()
+            if data.startswith("start"):
+                # Crear un nuevo logs handler para esta sesión
+                json_data = json.loads(data[6:])
+                task = json_data.get("task", "")
+                logs_handler = CustomLogsHandler(websocket, task)
+                
+                # Pasar el logs_handler al manager
+                manager.logs_handler = logs_handler
+                
+                await handle_start_command(websocket, data, manager, logs_handler)
+            elif data.startswith("human_feedback"):
+                await handle_human_feedback(data)
+            elif data.startswith("chat"):
+                await handle_chat(websocket, data, manager)
+            else:
+                print("Error: Unknown command or not enough parameters provided.")
+        except Exception as e:
+            logger.error(f"Error in websocket communication: {str(e)}")
+            break
 
 
 def extract_command_data(json_data: Dict) -> tuple:

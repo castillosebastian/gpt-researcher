@@ -62,10 +62,8 @@ class WebSocketManager:
     async def start_streaming(self, task, report_type, report_source, source_urls, document_urls, tone, websocket, headers=None):
         """Start streaming the output."""
         tone = Tone[tone]
-        # add customized JSON config file path here
         config_path = "default"
-        report = await run_agent(task, report_type, report_source, source_urls, document_urls, tone, websocket, headers = headers, config_path = config_path)
-        #Create new Chat Agent whenever a new report is written
+        report = await run_agent(task, report_type, report_source, source_urls, document_urls, tone, websocket, headers=headers, config_path=config_path)
         self.chat_agent = ChatAgentWithMemory(report, config_path, headers)
         return report
 

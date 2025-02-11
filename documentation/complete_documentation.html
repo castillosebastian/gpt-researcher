@@ -1,0 +1,1253 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <title>GPT Researcher Documentation</title>
+        <style>
+            body { 
+                max-width: 1200px; 
+                margin: 0 auto; 
+                padding: 20px;
+                font-family: system-ui, -apple-system, sans-serif;
+                line-height: 1.6;
+            }
+            pre { 
+                background: #f6f8fa; 
+                padding: 16px; 
+                border-radius: 6px;
+                overflow-x: auto;
+            }
+            code { font-family: 'Consolas', monospace; }
+            h1, h2, h3 { color: #24292e; }
+            hr { margin: 2em 0; }
+        </style>
+    </head>
+    <body>
+        <h1 id="gpt-researcher-complete-documentation">GPT Researcher - Complete Documentation</h1>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#design-documentation">Design Documentation</a></li>
+<li><a href="#main-application">Main Application</a></li>
+<li><a href="#backend-server">Backend Server</a></li>
+<li><a href="#multi-agent-system">Multi-Agent System</a></li>
+</ul>
+<hr />
+<h2 id="design-documentation">Design Documentation</h2>
+<h3 id="documentationapp_designmd">documentation/app_design.md</h3>
+<h1 id="gpt-researcher-diseno-de-la-aplicacion">GPT Researcher - Diseño de la Aplicación</h1>
+<h2 id="estructura-general">Estructura General</h2>
+<p>La aplicación sigue una arquitectura cliente-servidor con WebSocket para comunicación en tiempo real.</p>
+<h3 id="1-frontend">1. Frontend</h3>
+<p>El sistema multi-agente proporciona:
+- Coordinación de múltiples agentes especializados
+- Investigación y recopilación de información
+- Generación y edición de reportes
+- Revisión y mejora de contenido</p>
+<h3 id="2-inicializacion-del-sistema">2. Inicialización del Sistema</h3>
+<ol>
+<li><strong>Configuración Inicial</strong></li>
+<li>Carga de variables de entorno (.env)</li>
+<li>Creación del directorio de logs</li>
+<li>Configuración del sistema de logging</li>
+<li>
+<p>Supresión de logs verbosos (fontTools)</p>
+</li>
+<li>
+<p><strong>Servidor FastAPI</strong></p>
+</li>
+<li>Inicialización del servidor en puerto 8000</li>
+<li>Configuración de CORS y middleware</li>
+<li>Establecimiento de rutas y endpoints</li>
+</ol>
+<h3 id="3-sistema-multi-agente">3. Sistema Multi-Agente</h3>
+<p>El sistema incluye varios agentes especializados:
+- Browser Agent: Navegación y búsqueda web
+- Editor Agent: Edición y formato de contenido
+- Researcher Agent: Investigación profunda
+- Reviewer Agent: Revisión de calidad
+- Revisor Agent: Mejoras y correcciones
+- Writer Agent: Generación de contenido
+- Publisher Agent: Formateo final y publicación</p>
+<h3 id="4-flujo-de-datos">4. Flujo de Datos</h3>
+<ol>
+<li><strong>Inicio de Petición</strong></li>
+<li>Usuario ingresa consulta en frontend</li>
+<li>Se establece conexión WebSocket</li>
+<li>
+<p>Se envían parámetros de investigación</p>
+</li>
+<li>
+<p><strong>Procesamiento Backend</strong></p>
+</li>
+<li><code>main.py</code> recibe y valida la petición</li>
+<li><code>websocket_manager.py</code> establece streaming</li>
+<li>
+<p><code>server_utils.py</code> coordina el proceso</p>
+</li>
+<li>
+<p><strong>Investigación Multi-Agente</strong></p>
+</li>
+<li>Sistema multi-agente se activa</li>
+<li>Agentes realizan investigación coordinada</li>
+<li>Cada agente ejecuta su tarea especializada</li>
+<li>Se mantiene registro detallado en logs</li>
+<li>
+<p>Se genera reporte según especificaciones</p>
+</li>
+<li>
+<p><strong>Respuesta y Archivos</strong></p>
+</li>
+<li>Reporte se envía al frontend</li>
+<li>Se generan archivos en múltiples formatos:<ul>
+<li>PDF</li>
+<li>DOCX</li>
+<li>Markdown</li>
+<li>JSON (logs)</li>
+</ul>
+</li>
+<li>Usuario recibe resultados y puede descargarlos</li>
+</ol>
+<h3 id="5-sistema-de-logging">5. Sistema de Logging</h3>
+<p>El sistema implementa logging comprehensivo:
+- Logs detallados en <code>logs/app.log</code>
+- Formato timestamp - nombre - nivel - mensaje
+- Handlers para archivo y consola
+- Supresión de logs innecesarios
+- Tracking de investigaciones y errores</p>
+<h3 id="6-gestion-de-websocket">6. Gestión de WebSocket</h3>
+<p>El WebSocketManager proporciona:
+- Conexiones en tiempo real
+- Colas de mensajes asíncronas
+- Gestión de tareas de envío
+- Chat con agentes basado en memoria
+- Streaming de resultados de investigación</p>
+<h3 id="7-tipos-de-reportes">7. Tipos de Reportes</h3>
+<p>Se soportan múltiples tipos:
+- Reporte Básico (BasicReport)
+- Reporte Detallado (DetailedReport)
+- Reporte Multi-Agente (investigación colaborativa)</p>
+<h3 id="8-extensibilidad">8. Extensibilidad</h3>
+<p>El sistema está diseñado para:
+- Agregar nuevos tipos de agentes
+- Implementar nuevos formatos de reporte
+- Integrar fuentes adicionales de datos
+- Personalizar flujos de investigación</p>
+<h2 id="notas-de-implementacion">Notas de Implementación</h2>
+<ul>
+<li>TypeScript para frontend</li>
+<li>FastAPI para backend</li>
+<li>WebSocket para comunicación en tiempo real</li>
+<li>Sistema modular de agentes</li>
+<li>Logging comprehensivo</li>
+<li>Manejo asíncrono de tareas</li>
+</ul>
+<hr />
+<h2 id="main-application">Main Application</h2>
+<h3 id="mainpy">main.py</h3>
+<pre><code class="language-python">from dotenv import load_dotenv
+import logging
+from pathlib import Path
+
+# Create logs directory if it doesn't exist
+logs_dir = Path(&quot;logs&quot;)
+logs_dir.mkdir(exist_ok=True)
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        # File handler for general application logs
+        logging.FileHandler('logs/app.log'),
+        # Stream handler for console output
+        logging.StreamHandler()
+    ]
+)
+
+# Suppress verbose fontTools logging
+logging.getLogger('fontTools').setLevel(logging.WARNING)
+logging.getLogger('fontTools.subset').setLevel(logging.WARNING)
+logging.getLogger('fontTools.ttLib').setLevel(logging.WARNING)
+
+# Create logger instance
+logger = logging.getLogger(__name__)
+
+load_dotenv()
+
+from backend.server.server import app
+
+if __name__ == &quot;__main__&quot;:
+    import uvicorn
+
+    logger.info(&quot;Starting server...&quot;)
+    uvicorn.run(app, host=&quot;0.0.0.0&quot;, port=8000)
+</code></pre>
+<hr />
+<h2 id="backend-server">Backend Server</h2>
+<h3 id="backendserverserverpy">backend/server/server.py</h3>
+<pre><code class="language-python">import json
+import os
+from typing import Dict, List
+
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect, File, UploadFile, Header
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from pydantic import BaseModel
+
+from backend.server.websocket_manager import WebSocketManager
+from backend.server.server_utils import (
+    get_config_dict,
+    update_environment_variables, handle_file_upload, handle_file_deletion,
+    execute_multi_agents, handle_websocket_communication
+)
+
+
+from gpt_researcher.utils.logging_config import setup_research_logging
+
+import logging
+
+# Get logger instance
+logger = logging.getLogger(__name__)
+
+# Don't override parent logger settings
+logger.propagate = True
+
+logging.basicConfig(
+    level=logging.INFO,
+    format=&quot;%(asctime)s - %(levelname)s - %(message)s&quot;,
+    handlers=[
+        logging.StreamHandler()  # Only log to console
+    ]
+)
+
+# Models
+
+
+class ResearchRequest(BaseModel):
+    task: str
+    report_type: str
+    agent: str
+
+
+class ConfigRequest(BaseModel):
+    ANTHROPIC_API_KEY: str
+    TAVILY_API_KEY: str
+    LANGCHAIN_TRACING_V2: str
+    LANGCHAIN_API_KEY: str
+    OPENAI_API_KEY: str
+    DOC_PATH: str
+    RETRIEVER: str
+    GOOGLE_API_KEY: str = ''
+    GOOGLE_CX_KEY: str = ''
+    BING_API_KEY: str = ''
+    SEARCHAPI_API_KEY: str = ''
+    SERPAPI_API_KEY: str = ''
+    SERPER_API_KEY: str = ''
+    SEARX_URL: str = ''
+    XAI_API_KEY: str
+    DEEPSEEK_API_KEY: str
+
+
+# App initialization
+app = FastAPI()
+
+# Static files and templates
+app.mount(&quot;/site&quot;, StaticFiles(directory=&quot;./frontend&quot;), name=&quot;site&quot;)
+app.mount(&quot;/static&quot;, StaticFiles(directory=&quot;./frontend/static&quot;), name=&quot;static&quot;)
+templates = Jinja2Templates(directory=&quot;./frontend&quot;)
+
+# WebSocket manager
+manager = WebSocketManager()
+
+# Middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[&quot;http://localhost:3000&quot;],
+    allow_credentials=True,
+    allow_methods=[&quot;*&quot;],
+    allow_headers=[&quot;*&quot;],
+)
+
+# Constants
+DOC_PATH = os.getenv(&quot;DOC_PATH&quot;, &quot;./my-docs&quot;)
+
+# Startup event
+
+
+@app.on_event(&quot;startup&quot;)
+def startup_event():
+    os.makedirs(&quot;outputs&quot;, exist_ok=True)
+    app.mount(&quot;/outputs&quot;, StaticFiles(directory=&quot;outputs&quot;), name=&quot;outputs&quot;)
+    os.makedirs(DOC_PATH, exist_ok=True)
+
+
+# Routes
+
+
+@app.get(&quot;/&quot;)
+async def read_root(request: Request):
+    return templates.TemplateResponse(&quot;index.html&quot;, {&quot;request&quot;: request, &quot;report&quot;: None})
+
+
+@app.get(&quot;/files/&quot;)
+async def list_files():
+    files = os.listdir(DOC_PATH)
+    print(f&quot;Files in {DOC_PATH}: {files}&quot;)
+    return {&quot;files&quot;: files}
+
+
+@app.post(&quot;/api/multi_agents&quot;)
+async def run_multi_agents():
+    return await execute_multi_agents(manager)
+
+
+@app.post(&quot;/upload/&quot;)
+async def upload_file(file: UploadFile = File(...)):
+    return await handle_file_upload(file, DOC_PATH)
+
+
+@app.delete(&quot;/files/{filename}&quot;)
+async def delete_file(filename: str):
+    return await handle_file_deletion(filename, DOC_PATH)
+
+
+@app.websocket(&quot;/ws&quot;)
+async def websocket_endpoint(websocket: WebSocket):
+    await manager.connect(websocket)
+    try:
+        await handle_websocket_communication(websocket, manager)
+    except WebSocketDisconnect:
+        await manager.disconnect(websocket)
+
+</code></pre>
+<hr />
+<h3 id="backendserverwebsocket_managerpy">backend/server/websocket_manager.py</h3>
+<pre><code class="language-python">import asyncio
+import datetime
+from typing import Dict, List
+
+from fastapi import WebSocket
+
+from backend.report_type import BasicReport, DetailedReport
+from backend.chat import ChatAgentWithMemory
+
+from gpt_researcher.utils.enum import ReportType, Tone
+from multi_agents.main import run_research_task
+from gpt_researcher.actions import stream_output  # Import stream_output
+from backend.server.server_utils import CustomLogsHandler
+
+
+class WebSocketManager:
+    &quot;&quot;&quot;Manage websockets&quot;&quot;&quot;
+
+    def __init__(self):
+        &quot;&quot;&quot;Initialize the WebSocketManager class.&quot;&quot;&quot;
+        self.active_connections: List[WebSocket] = []
+        self.sender_tasks: Dict[WebSocket, asyncio.Task] = {}
+        self.message_queues: Dict[WebSocket, asyncio.Queue] = {}
+        self.chat_agent = None
+
+    async def start_sender(self, websocket: WebSocket):
+        &quot;&quot;&quot;Start the sender task.&quot;&quot;&quot;
+        queue = self.message_queues.get(websocket)
+        if not queue:
+            return
+
+        while True:
+            message = await queue.get()
+            if websocket in self.active_connections:
+                try:
+                    if message == &quot;ping&quot;:
+                        await websocket.send_text(&quot;pong&quot;)
+                    else:
+                        await websocket.send_text(message)
+                except:
+                    break
+            else:
+                break
+
+    async def connect(self, websocket: WebSocket):
+        &quot;&quot;&quot;Connect a websocket.&quot;&quot;&quot;
+        await websocket.accept()
+        self.active_connections.append(websocket)
+        self.message_queues[websocket] = asyncio.Queue()
+        self.sender_tasks[websocket] = asyncio.create_task(
+            self.start_sender(websocket))
+
+    async def disconnect(self, websocket: WebSocket):
+        &quot;&quot;&quot;Disconnect a websocket.&quot;&quot;&quot;
+        if websocket in self.active_connections:
+            self.active_connections.remove(websocket)
+            self.sender_tasks[websocket].cancel()
+            await self.message_queues[websocket].put(None)
+            del self.sender_tasks[websocket]
+            del self.message_queues[websocket]
+
+    async def start_streaming(self, task, report_type, report_source, source_urls, document_urls, tone, websocket, headers=None):
+        &quot;&quot;&quot;Start streaming the output.&quot;&quot;&quot;
+        tone = Tone[tone]
+        config_path = &quot;default&quot;
+        report = await run_agent(task, report_type, report_source, source_urls, document_urls, tone, websocket, headers=headers, config_path=config_path)
+        self.chat_agent = ChatAgentWithMemory(report, config_path, headers)
+        return report
+
+    async def chat(self, message, websocket):
+        &quot;&quot;&quot;Chat with the agent based message diff&quot;&quot;&quot;
+        if self.chat_agent:
+            await self.chat_agent.chat(message, websocket)
+        else:
+            await websocket.send_json({&quot;type&quot;: &quot;chat&quot;, &quot;content&quot;: &quot;Knowledge empty, please run the research first to obtain knowledge&quot;})
+
+async def run_agent(task, report_type, report_source, source_urls, document_urls, tone: Tone, websocket, headers=None, config_path=&quot;&quot;):
+    &quot;&quot;&quot;Run the agent.&quot;&quot;&quot;
+    start_time = datetime.datetime.now()
+
+    # Create logs handler for this research task
+    logs_handler = CustomLogsHandler(websocket, task)
+
+    # Initialize researcher based on report type
+    if report_type == &quot;multi_agents&quot;:
+        report = await run_research_task(
+            query=task, 
+            websocket=logs_handler,  # Use logs_handler instead of raw websocket
+            stream_output=stream_output, 
+            tone=tone, 
+            headers=headers
+        )
+        report = report.get(&quot;report&quot;, &quot;&quot;)
+
+    elif report_type == ReportType.DetailedReport.value:
+        researcher = DetailedReport(
+            query=task,
+            report_type=report_type,
+            report_source=report_source,
+            source_urls=source_urls,
+            document_urls=document_urls,
+            tone=tone,
+            config_path=config_path,
+            websocket=logs_handler,  # Use logs_handler instead of raw websocket
+            headers=headers
+        )
+        report = await researcher.run()
+
+    else:
+        researcher = BasicReport(
+            query=task,
+            report_type=report_type,
+            report_source=report_source,
+            source_urls=source_urls,
+            document_urls=document_urls,
+            tone=tone,
+            config_path=config_path,
+            websocket=logs_handler,  # Use logs_handler instead of raw websocket
+            headers=headers
+        )
+        report = await researcher.run()
+
+    return report
+
+</code></pre>
+<hr />
+<h3 id="backendserverserver_utilspy">backend/server/server_utils.py</h3>
+<pre><code class="language-python">import json
+import os
+import re
+import time
+import shutil
+from typing import Dict, List, Any
+from fastapi.responses import JSONResponse, FileResponse
+from gpt_researcher.document.document import DocumentLoader
+from backend.utils import write_md_to_pdf, write_md_to_word, write_text_to_md
+from pathlib import Path
+from datetime import datetime
+from fastapi import HTTPException
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+class CustomLogsHandler:
+    &quot;&quot;&quot;Custom handler to capture streaming logs from the research process&quot;&quot;&quot;
+    def __init__(self, websocket, task: str):
+        self.logs = []
+        self.websocket = websocket
+        sanitized_filename = sanitize_filename(f&quot;task_{int(time.time())}_{task}&quot;)
+        self.log_file = os.path.join(&quot;outputs&quot;, f&quot;{sanitized_filename}.json&quot;)
+        self.timestamp = datetime.now().isoformat()
+        # Initialize log file with metadata
+        os.makedirs(&quot;outputs&quot;, exist_ok=True)
+        with open(self.log_file, 'w') as f:
+            json.dump({
+                &quot;timestamp&quot;: self.timestamp,
+                &quot;events&quot;: [],
+                &quot;content&quot;: {
+                    &quot;query&quot;: &quot;&quot;,
+                    &quot;sources&quot;: [],
+                    &quot;context&quot;: [],
+                    &quot;report&quot;: &quot;&quot;,
+                    &quot;costs&quot;: 0.0
+                }
+            }, f, indent=2)
+
+    async def send_json(self, data: Dict[str, Any]) -&gt; None:
+        &quot;&quot;&quot;Store log data and send to websocket&quot;&quot;&quot;
+        # Send to websocket for real-time display
+        if self.websocket:
+            await self.websocket.send_json(data)
+
+        # Read current log file
+        with open(self.log_file, 'r') as f:
+            log_data = json.load(f)
+
+        # Update appropriate section based on data type
+        if data.get('type') == 'logs':
+            log_data['events'].append({
+                &quot;timestamp&quot;: datetime.now().isoformat(),
+                &quot;type&quot;: &quot;event&quot;,
+                &quot;data&quot;: data
+            })
+        else:
+            # Update content section for other types of data
+            log_data['content'].update(data)
+
+        # Save updated log file
+        with open(self.log_file, 'w') as f:
+            json.dump(log_data, f, indent=2)
+        logger.debug(f&quot;Log entry written to: {self.log_file}&quot;)
+
+
+class Researcher:
+    def __init__(self, query: str, report_type: str = &quot;research_report&quot;):
+        self.query = query
+        self.report_type = report_type
+        # Generate unique ID for this research task
+        self.research_id = f&quot;{datetime.now().strftime('%Y%m%d_%H%M%S')}_{hash(query)}&quot;
+        # Initialize logs handler with research ID
+        self.logs_handler = CustomLogsHandler(self.research_id)
+        self.researcher = GPTResearcher(
+            query=query,
+            report_type=report_type,
+            websocket=self.logs_handler
+        )
+
+    async def research(self) -&gt; dict:
+        &quot;&quot;&quot;Conduct research and return paths to generated files&quot;&quot;&quot;
+        await self.researcher.conduct_research()
+        report = await self.researcher.write_report()
+
+        # Generate the files
+        sanitized_filename = sanitize_filename(f&quot;task_{int(time.time())}_{self.query}&quot;)
+        file_paths = await generate_report_files(report, sanitized_filename)
+
+        # Get the JSON log path that was created by CustomLogsHandler
+        json_relative_path = os.path.relpath(self.logs_handler.log_file)
+
+        return {
+            &quot;output&quot;: {
+                **file_paths,  # Include PDF, DOCX, and MD paths
+                &quot;json&quot;: json_relative_path
+            }
+        }
+
+def sanitize_filename(filename: str) -&gt; str:
+    # Split into components
+    prefix, timestamp, *task_parts = filename.split('_')
+    task = '_'.join(task_parts)
+
+    # Calculate max length for task portion
+    # 255 - len(&quot;outputs/&quot;) - len(&quot;task_&quot;) - len(timestamp) - len(&quot;_.json&quot;) - safety_margin
+    max_task_length = 255 - 8 - 5 - 10 - 6 - 10  # ~216 chars for task
+
+    # Truncate task if needed
+    truncated_task = task[:max_task_length] if len(task) &gt; max_task_length else task
+
+    # Reassemble and clean the filename
+    sanitized = f&quot;{prefix}_{timestamp}_{truncated_task}&quot;
+    return re.sub(r&quot;[^\w\s-]&quot;, &quot;&quot;, sanitized).strip()
+
+
+async def handle_start_command(websocket, data: str, manager):
+    json_data = json.loads(data[6:])
+    task, report_type, source_urls, document_urls, tone, headers, report_source = extract_command_data(json_data)
+
+    # ... logging setup ...
+
+    report = await manager.start_streaming(
+        task, 
+        report_type, 
+        report_source, 
+        source_urls, 
+        document_urls,
+        tone, 
+        websocket,
+        headers
+    )
+    report = str(report)
+    file_paths = await generate_report_files(report, sanitize_filename(f&quot;task_{int(time.time())}_{task}&quot;))
+    # Add JSON log path to file_paths
+    file_paths[&quot;json&quot;] = os.path.relpath(self.logs_handler.log_file)
+    await send_file_paths(websocket, file_paths)
+
+
+async def handle_human_feedback(data: str):
+    feedback_data = json.loads(data[14:])  # Remove &quot;human_feedback&quot; prefix
+    print(f&quot;Received human feedback: {feedback_data}&quot;)
+    # TODO: Add logic to forward the feedback to the appropriate agent or update the research state
+
+async def handle_chat(websocket, data: str, manager):
+    json_data = json.loads(data[4:])
+    print(f&quot;Received chat message: {json_data.get('message')}&quot;)
+    await manager.chat(json_data.get(&quot;message&quot;), websocket)
+
+async def generate_report_files(report: str, filename: str) -&gt; Dict[str, str]:
+    pdf_path = await write_md_to_pdf(report, filename)
+    docx_path = await write_md_to_word(report, filename)
+    md_path = await write_text_to_md(report, filename)
+    return {&quot;pdf&quot;: pdf_path, &quot;docx&quot;: docx_path, &quot;md&quot;: md_path}
+
+
+async def send_file_paths(websocket, file_paths: Dict[str, str]):
+    await websocket.send_json({&quot;type&quot;: &quot;path&quot;, &quot;output&quot;: file_paths})
+
+
+def get_config_dict(
+    langchain_api_key: str, openai_api_key: str, tavily_api_key: str,
+    google_api_key: str, google_cx_key: str, bing_api_key: str,
+    searchapi_api_key: str, serpapi_api_key: str, serper_api_key: str, searx_url: str
+) -&gt; Dict[str, str]:
+    return {
+        &quot;LANGCHAIN_API_KEY&quot;: langchain_api_key or os.getenv(&quot;LANGCHAIN_API_KEY&quot;, &quot;&quot;),
+        &quot;OPENAI_API_KEY&quot;: openai_api_key or os.getenv(&quot;OPENAI_API_KEY&quot;, &quot;&quot;),
+        &quot;TAVILY_API_KEY&quot;: tavily_api_key or os.getenv(&quot;TAVILY_API_KEY&quot;, &quot;&quot;),
+        &quot;GOOGLE_API_KEY&quot;: google_api_key or os.getenv(&quot;GOOGLE_API_KEY&quot;, &quot;&quot;),
+        &quot;GOOGLE_CX_KEY&quot;: google_cx_key or os.getenv(&quot;GOOGLE_CX_KEY&quot;, &quot;&quot;),
+        &quot;BING_API_KEY&quot;: bing_api_key or os.getenv(&quot;BING_API_KEY&quot;, &quot;&quot;),
+        &quot;SEARCHAPI_API_KEY&quot;: searchapi_api_key or os.getenv(&quot;SEARCHAPI_API_KEY&quot;, &quot;&quot;),
+        &quot;SERPAPI_API_KEY&quot;: serpapi_api_key or os.getenv(&quot;SERPAPI_API_KEY&quot;, &quot;&quot;),
+        &quot;SERPER_API_KEY&quot;: serper_api_key or os.getenv(&quot;SERPER_API_KEY&quot;, &quot;&quot;),
+        &quot;SEARX_URL&quot;: searx_url or os.getenv(&quot;SEARX_URL&quot;, &quot;&quot;),
+        &quot;LANGCHAIN_TRACING_V2&quot;: os.getenv(&quot;LANGCHAIN_TRACING_V2&quot;, &quot;true&quot;),
+        &quot;DOC_PATH&quot;: os.getenv(&quot;DOC_PATH&quot;, &quot;./my-docs&quot;),
+        &quot;RETRIEVER&quot;: os.getenv(&quot;RETRIEVER&quot;, &quot;&quot;),
+        &quot;EMBEDDING_MODEL&quot;: os.getenv(&quot;OPENAI_EMBEDDING_MODEL&quot;, &quot;&quot;)
+    }
+
+
+def update_environment_variables(config: Dict[str, str]):
+    for key, value in config.items():
+        os.environ[key] = value
+
+
+async def handle_file_upload(file, DOC_PATH: str) -&gt; Dict[str, str]:
+    file_path = os.path.join(DOC_PATH, os.path.basename(file.filename))
+    with open(file_path, &quot;wb&quot;) as buffer:
+        shutil.copyfileobj(file.file, buffer)
+    print(f&quot;File uploaded to {file_path}&quot;)
+
+    document_loader = DocumentLoader(DOC_PATH)
+    await document_loader.load()
+
+    return {&quot;filename&quot;: file.filename, &quot;path&quot;: file_path}
+
+
+async def handle_file_deletion(filename: str, DOC_PATH: str) -&gt; JSONResponse:
+    file_path = os.path.join(DOC_PATH, os.path.basename(filename))
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        print(f&quot;File deleted: {file_path}&quot;)
+        return JSONResponse(content={&quot;message&quot;: &quot;File deleted successfully&quot;})
+    else:
+        print(f&quot;File not found: {file_path}&quot;)
+        return JSONResponse(status_code=404, content={&quot;message&quot;: &quot;File not found&quot;})
+
+
+async def execute_multi_agents(manager) -&gt; Any:
+    websocket = manager.active_connections[0] if manager.active_connections else None
+    if websocket:
+        report = await run_research_task(&quot;Is AI in a hype cycle?&quot;, websocket, stream_output)
+        return {&quot;report&quot;: report}
+    else:
+        return JSONResponse(status_code=400, content={&quot;message&quot;: &quot;No active WebSocket connection&quot;})
+
+
+async def handle_websocket_communication(websocket, manager):
+    while True:
+        data = await websocket.receive_text()
+        if data.startswith(&quot;start&quot;):
+            await handle_start_command(websocket, data, manager)
+        elif data.startswith(&quot;human_feedback&quot;):
+            await handle_human_feedback(data)
+        elif data.startswith(&quot;chat&quot;):
+            await handle_chat(websocket, data, manager)
+        else:
+            print(&quot;Error: Unknown command or not enough parameters provided.&quot;)
+
+
+def extract_command_data(json_data: Dict) -&gt; tuple:
+    return (
+        json_data.get(&quot;task&quot;),
+        json_data.get(&quot;report_type&quot;),
+        json_data.get(&quot;source_urls&quot;),
+        json_data.get(&quot;document_urls&quot;),
+        json_data.get(&quot;tone&quot;),
+        json_data.get(&quot;headers&quot;, {}),
+        json_data.get(&quot;report_source&quot;)
+    )
+
+</code></pre>
+<hr />
+<h2 id="multi-agent-system">Multi-Agent System</h2>
+<h3 id="multi_agentsagentpy">multi_agents/agent.py</h3>
+<pre><code class="language-python">from multi_agents.agents import ChiefEditorAgent
+
+chief_editor = ChiefEditorAgent({
+  &quot;query&quot;: &quot;Is AI in a hype cycle?&quot;,
+  &quot;max_sections&quot;: 3,
+  &quot;follow_guidelines&quot;: False,
+  &quot;model&quot;: &quot;gpt-4o&quot;,
+  &quot;guidelines&quot;: [
+    &quot;The report MUST be written in APA format&quot;,
+    &quot;Each sub section MUST include supporting sources using hyperlinks. If none exist, erase the sub section or rewrite it to be a part of the previous section&quot;,
+    &quot;The report MUST be written in spanish&quot;
+  ],
+  &quot;verbose&quot;: False
+}, websocket=None, stream_output=None)
+graph = chief_editor.init_research_team()
+graph = graph.compile()
+</code></pre>
+<hr />
+<h3 id="multi_agentsagentsbrowserpy">multi_agents/agents/browser.py</h3>
+<p><em>File not found</em></p>
+<h3 id="multi_agentsagentseditorpy">multi_agents/agents/editor.py</h3>
+<pre><code class="language-python">from datetime import datetime
+import asyncio
+from typing import Dict, List, Optional
+
+from langgraph.graph import StateGraph, END
+
+from .utils.views import print_agent_output
+from .utils.llms import call_model
+from ..memory.draft import DraftState
+from . import ResearchAgent, ReviewerAgent, ReviserAgent
+
+
+class EditorAgent:
+    &quot;&quot;&quot;Agent responsible for editing and managing code.&quot;&quot;&quot;
+
+    def __init__(self, websocket=None, stream_output=None, headers=None):
+        self.websocket = websocket
+        self.stream_output = stream_output
+        self.headers = headers or {}
+
+    async def plan_research(self, research_state: Dict[str, any]) -&gt; Dict[str, any]:
+        &quot;&quot;&quot;
+        Plan the research outline based on initial research and task parameters.
+
+        :param research_state: Dictionary containing research state information
+        :return: Dictionary with title, date, and planned sections
+        &quot;&quot;&quot;
+        initial_research = research_state.get(&quot;initial_research&quot;)
+        task = research_state.get(&quot;task&quot;)
+        include_human_feedback = task.get(&quot;include_human_feedback&quot;)
+        human_feedback = research_state.get(&quot;human_feedback&quot;)
+        max_sections = task.get(&quot;max_sections&quot;)
+
+        prompt = self._create_planning_prompt(
+            initial_research, include_human_feedback, human_feedback, max_sections)
+
+        print_agent_output(
+            &quot;Planning an outline layout based on initial research...&quot;, agent=&quot;EDITOR&quot;)
+        plan = await call_model(
+            prompt=prompt,
+            model=task.get(&quot;model&quot;),
+            response_format=&quot;json&quot;,
+        )
+
+        return {
+            &quot;title&quot;: plan.get(&quot;title&quot;),
+            &quot;date&quot;: plan.get(&quot;date&quot;),
+            &quot;sections&quot;: plan.get(&quot;sections&quot;),
+        }
+
+    async def run_parallel_research(self, research_state: Dict[str, any]) -&gt; Dict[str, List[str]]:
+        &quot;&quot;&quot;
+        Execute parallel research tasks for each section.
+
+        :param research_state: Dictionary containing research state information
+        :return: Dictionary with research results
+        &quot;&quot;&quot;
+        agents = self._initialize_agents()
+        workflow = self._create_workflow()
+        chain = workflow.compile()
+
+        queries = research_state.get(&quot;sections&quot;)
+        title = research_state.get(&quot;title&quot;)
+
+        self._log_parallel_research(queries)
+
+        final_drafts = [
+            chain.ainvoke(self._create_task_input(
+                research_state, query, title))
+            for query in queries
+        ]
+        research_results = [
+            result[&quot;draft&quot;] for result in await asyncio.gather(*final_drafts)
+        ]
+
+        return {&quot;research_data&quot;: research_results}
+
+    def _create_planning_prompt(self, initial_research: str, include_human_feedback: bool,
+                                human_feedback: Optional[str], max_sections: int) -&gt; List[Dict[str, str]]:
+        &quot;&quot;&quot;Create the prompt for research planning.&quot;&quot;&quot;
+        return [
+            {
+                &quot;role&quot;: &quot;system&quot;,
+                &quot;content&quot;: &quot;You are a research editor. Your goal is to oversee the research project &quot;
+                           &quot;from inception to completion. Your main task is to plan the article section &quot;
+                           &quot;layout based on an initial research summary.\n &quot;,
+            },
+            {
+                &quot;role&quot;: &quot;user&quot;,
+                &quot;content&quot;: self._format_planning_instructions(initial_research, include_human_feedback,
+                                                              human_feedback, max_sections),
+            },
+        ]
+
+    def _format_planning_instructions(self, initial_research: str, include_human_feedback: bool,
+                                      human_feedback: Optional[str], max_sections: int) -&gt; str:
+        &quot;&quot;&quot;Format the instructions for research planning.&quot;&quot;&quot;
+        today = datetime.now().strftime('%d/%m/%Y')
+        feedback_instruction = (
+            f&quot;Human feedback: {human_feedback}. You must plan the sections based on the human feedback.&quot;
+            if include_human_feedback and human_feedback and human_feedback != 'no'
+            else ''
+        )
+
+        return f&quot;&quot;&quot;Today's date is {today}
+                   Research summary report: '{initial_research}'
+                   {feedback_instruction}
+                   \nYour task is to generate an outline of sections headers for the research project
+                   based on the research summary report above.
+                   You must generate a maximum of {max_sections} section headers.
+                   You must focus ONLY on related research topics for subheaders and do NOT include introduction, conclusion and references.
+                   You must return nothing but a JSON with the fields 'title' (str) and 
+                   'sections' (maximum {max_sections} section headers) with the following structure:
+                   '{{title: string research title, date: today's date, 
+                   sections: ['section header 1', 'section header 2', 'section header 3' ...]}}'.&quot;&quot;&quot;
+
+    def _initialize_agents(self) -&gt; Dict[str, any]:
+        &quot;&quot;&quot;Initialize the research, reviewer, and reviser skills.&quot;&quot;&quot;
+        return {
+            &quot;research&quot;: ResearchAgent(self.websocket, self.stream_output, self.headers),
+            &quot;reviewer&quot;: ReviewerAgent(self.websocket, self.stream_output, self.headers),
+            &quot;reviser&quot;: ReviserAgent(self.websocket, self.stream_output, self.headers),
+        }
+
+    def _create_workflow(self) -&gt; StateGraph:
+        &quot;&quot;&quot;Create the workflow for the research process.&quot;&quot;&quot;
+        agents = self._initialize_agents()
+        workflow = StateGraph(DraftState)
+
+        workflow.add_node(&quot;researcher&quot;, agents[&quot;research&quot;].run_depth_research)
+        workflow.add_node(&quot;reviewer&quot;, agents[&quot;reviewer&quot;].run)
+        workflow.add_node(&quot;reviser&quot;, agents[&quot;reviser&quot;].run)
+
+        workflow.set_entry_point(&quot;researcher&quot;)
+        workflow.add_edge(&quot;researcher&quot;, &quot;reviewer&quot;)
+        workflow.add_edge(&quot;reviser&quot;, &quot;reviewer&quot;)
+        workflow.add_conditional_edges(
+            &quot;reviewer&quot;,
+            lambda draft: &quot;accept&quot; if draft[&quot;review&quot;] is None else &quot;revise&quot;,
+            {&quot;accept&quot;: END, &quot;revise&quot;: &quot;reviser&quot;},
+        )
+
+        return workflow
+
+    def _log_parallel_research(self, queries: List[str]) -&gt; None:
+        &quot;&quot;&quot;Log the start of parallel research tasks.&quot;&quot;&quot;
+        if self.websocket and self.stream_output:
+            asyncio.create_task(self.stream_output(
+                &quot;logs&quot;,
+                &quot;parallel_research&quot;,
+                f&quot;Running parallel research for the following queries: {queries}&quot;,
+                self.websocket,
+            ))
+        else:
+            print_agent_output(
+                f&quot;Running the following research tasks in parallel: {queries}...&quot;,
+                agent=&quot;EDITOR&quot;,
+            )
+
+    def _create_task_input(self, research_state: Dict[str, any], query: str, title: str) -&gt; Dict[str, any]:
+        &quot;&quot;&quot;Create the input for a single research task.&quot;&quot;&quot;
+        return {
+            &quot;task&quot;: research_state.get(&quot;task&quot;),
+            &quot;topic&quot;: query,
+            &quot;title&quot;: title,
+            &quot;headers&quot;: self.headers,
+        }
+
+</code></pre>
+<hr />
+<h3 id="multi_agentsagentsresearcherpy">multi_agents/agents/researcher.py</h3>
+<pre><code class="language-python">from gpt_researcher import GPTResearcher
+from colorama import Fore, Style
+from .utils.views import print_agent_output
+
+
+class ResearchAgent:
+    def __init__(self, websocket=None, stream_output=None, tone=None, headers=None):
+        self.websocket = websocket
+        self.stream_output = stream_output
+        self.headers = headers or {}
+        self.tone = tone
+
+    async def research(self, query: str, research_report: str = &quot;research_report&quot;,
+                       parent_query: str = &quot;&quot;, verbose=True, source=&quot;web&quot;, tone=None, headers=None):
+        # Initialize the researcher
+        researcher = GPTResearcher(query=query, report_type=research_report, parent_query=parent_query,
+                                   verbose=verbose, report_source=source, tone=tone, websocket=self.websocket, headers=self.headers)
+        # Conduct research on the given query
+        await researcher.conduct_research()
+        # Write the report
+        report = await researcher.write_report()
+
+        return report
+
+    async def run_subtopic_research(self, parent_query: str, subtopic: str, verbose: bool = True, source=&quot;web&quot;, headers=None):
+        try:
+            report = await self.research(parent_query=parent_query, query=subtopic,
+                                         research_report=&quot;subtopic_report&quot;, verbose=verbose, source=source, tone=self.tone, headers=None)
+        except Exception as e:
+            print(f&quot;{Fore.RED}Error in researching topic {subtopic}: {e}{Style.RESET_ALL}&quot;)
+            report = None
+        return {subtopic: report}
+
+    async def run_initial_research(self, research_state: dict):
+        task = research_state.get(&quot;task&quot;)
+        query = task.get(&quot;query&quot;)
+        source = task.get(&quot;source&quot;, &quot;web&quot;)
+
+        if self.websocket and self.stream_output:
+            await self.stream_output(&quot;logs&quot;, &quot;initial_research&quot;, f&quot;Running initial research on the following query: {query}&quot;, self.websocket)
+        else:
+            print_agent_output(f&quot;Running initial research on the following query: {query}&quot;, agent=&quot;RESEARCHER&quot;)
+        return {&quot;task&quot;: task, &quot;initial_research&quot;: await self.research(query=query, verbose=task.get(&quot;verbose&quot;),
+                                                                      source=source, tone=self.tone, headers=self.headers)}
+
+    async def run_depth_research(self, draft_state: dict):
+        task = draft_state.get(&quot;task&quot;)
+        topic = draft_state.get(&quot;topic&quot;)
+        parent_query = task.get(&quot;query&quot;)
+        source = task.get(&quot;source&quot;, &quot;web&quot;)
+        verbose = task.get(&quot;verbose&quot;)
+        if self.websocket and self.stream_output:
+            await self.stream_output(&quot;logs&quot;, &quot;depth_research&quot;, f&quot;Running in depth research on the following report topic: {topic}&quot;, self.websocket)
+        else:
+            print_agent_output(f&quot;Running in depth research on the following report topic: {topic}&quot;, agent=&quot;RESEARCHER&quot;)
+        research_draft = await self.run_subtopic_research(parent_query=parent_query, subtopic=topic,
+                                                          verbose=verbose, source=source, headers=self.headers)
+        return {&quot;draft&quot;: research_draft}
+</code></pre>
+<hr />
+<h3 id="multi_agentsagentsreviewerpy">multi_agents/agents/reviewer.py</h3>
+<pre><code class="language-python">from .utils.views import print_agent_output
+from .utils.llms import call_model
+
+TEMPLATE = &quot;&quot;&quot;You are an expert research article reviewer. \
+Your goal is to review research drafts and provide feedback to the reviser only based on specific guidelines. \
+&quot;&quot;&quot;
+
+
+class ReviewerAgent:
+    def __init__(self, websocket=None, stream_output=None, headers=None):
+        self.websocket = websocket
+        self.stream_output = stream_output
+        self.headers = headers or {}
+
+    async def review_draft(self, draft_state: dict):
+        &quot;&quot;&quot;
+        Review a draft article
+        :param draft_state:
+        :return:
+        &quot;&quot;&quot;
+        task = draft_state.get(&quot;task&quot;)
+        guidelines = &quot;- &quot;.join(guideline for guideline in task.get(&quot;guidelines&quot;))
+        revision_notes = draft_state.get(&quot;revision_notes&quot;)
+
+        revise_prompt = f&quot;&quot;&quot;The reviser has already revised the draft based on your previous review notes with the following feedback:
+{revision_notes}\n
+Please provide additional feedback ONLY if critical since the reviser has already made changes based on your previous feedback.
+If you think the article is sufficient or that non critical revisions are required, please aim to return None.
+&quot;&quot;&quot;
+
+        review_prompt = f&quot;&quot;&quot;You have been tasked with reviewing the draft which was written by a non-expert based on specific guidelines.
+Please accept the draft if it is good enough to publish, or send it for revision, along with your notes to guide the revision.
+If not all of the guideline criteria are met, you should send appropriate revision notes.
+If the draft meets all the guidelines, please return None.
+{revise_prompt if revision_notes else &quot;&quot;}
+
+Guidelines: {guidelines}\nDraft: {draft_state.get(&quot;draft&quot;)}\n
+&quot;&quot;&quot;
+        prompt = [
+            {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: TEMPLATE},
+            {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: review_prompt},
+        ]
+
+        response = await call_model(prompt, model=task.get(&quot;model&quot;))
+
+        if task.get(&quot;verbose&quot;):
+            if self.websocket and self.stream_output:
+                await self.stream_output(
+                    &quot;logs&quot;,
+                    &quot;review_feedback&quot;,
+                    f&quot;Review feedback is: {response}...&quot;,
+                    self.websocket,
+                )
+            else:
+                print_agent_output(
+                    f&quot;Review feedback is: {response}...&quot;, agent=&quot;REVIEWER&quot;
+                )
+
+        if &quot;None&quot; in response:
+            return None
+        return response
+
+    async def run(self, draft_state: dict):
+        task = draft_state.get(&quot;task&quot;)
+        guidelines = task.get(&quot;guidelines&quot;)
+        to_follow_guidelines = task.get(&quot;follow_guidelines&quot;)
+        review = None
+        if to_follow_guidelines:
+            print_agent_output(f&quot;Reviewing draft...&quot;, agent=&quot;REVIEWER&quot;)
+
+            if task.get(&quot;verbose&quot;):
+                print_agent_output(
+                    f&quot;Following guidelines {guidelines}...&quot;, agent=&quot;REVIEWER&quot;
+                )
+
+            review = await self.review_draft(draft_state)
+        else:
+            print_agent_output(f&quot;Ignoring guidelines...&quot;, agent=&quot;REVIEWER&quot;)
+        return {&quot;review&quot;: review}
+
+</code></pre>
+<hr />
+<h3 id="multi_agentsagentswriterpy">multi_agents/agents/writer.py</h3>
+<pre><code class="language-python">from datetime import datetime
+import json5 as json
+from .utils.views import print_agent_output
+from .utils.llms import call_model
+
+sample_json = &quot;&quot;&quot;
+{
+  &quot;table_of_contents&quot;: A table of contents in markdown syntax (using '-') based on the research headers and subheaders,
+  &quot;introduction&quot;: An indepth introduction to the topic in markdown syntax and hyperlink references to relevant sources,
+  &quot;conclusion&quot;: A conclusion to the entire research based on all research data in markdown syntax and hyperlink references to relevant sources,
+  &quot;sources&quot;: A list with strings of all used source links in the entire research data in markdown syntax and apa citation format. For example: ['-  Title, year, Author [source url](source)', ...]
+}
+&quot;&quot;&quot;
+
+
+class WriterAgent:
+    def __init__(self, websocket=None, stream_output=None, headers=None):
+        self.websocket = websocket
+        self.stream_output = stream_output
+        self.headers = headers
+
+    def get_headers(self, research_state: dict):
+        return {
+            &quot;title&quot;: research_state.get(&quot;title&quot;),
+            &quot;date&quot;: &quot;Date&quot;,
+            &quot;introduction&quot;: &quot;Introduction&quot;,
+            &quot;table_of_contents&quot;: &quot;Table of Contents&quot;,
+            &quot;conclusion&quot;: &quot;Conclusion&quot;,
+            &quot;references&quot;: &quot;References&quot;,
+        }
+
+    async def write_sections(self, research_state: dict):
+        query = research_state.get(&quot;title&quot;)
+        data = research_state.get(&quot;research_data&quot;)
+        task = research_state.get(&quot;task&quot;)
+        follow_guidelines = task.get(&quot;follow_guidelines&quot;)
+        guidelines = task.get(&quot;guidelines&quot;)
+
+        prompt = [
+            {
+                &quot;role&quot;: &quot;system&quot;,
+                &quot;content&quot;: &quot;You are a research writer. Your sole purpose is to write a well-written &quot;
+                &quot;research reports about a &quot;
+                &quot;topic based on research findings and information.\n &quot;,
+            },
+            {
+                &quot;role&quot;: &quot;user&quot;,
+                &quot;content&quot;: f&quot;Today's date is {datetime.now().strftime('%d/%m/%Y')}\n.&quot;
+                f&quot;Query or Topic: {query}\n&quot;
+                f&quot;Research data: {str(data)}\n&quot;
+                f&quot;Your task is to write an in depth, well written and detailed &quot;
+                f&quot;introduction and conclusion to the research report based on the provided research data. &quot;
+                f&quot;Do not include headers in the results.\n&quot;
+                f&quot;You MUST include any relevant sources to the introduction and conclusion as markdown hyperlinks -&quot;
+                f&quot;For example: 'This is a sample text. ([url website](url))'\n\n&quot;
+                f&quot;{f'You must follow the guidelines provided: {guidelines}' if follow_guidelines else ''}\n&quot;
+                f&quot;You MUST return nothing but a JSON in the following format (without json markdown):\n&quot;
+                f&quot;{sample_json}\n\n&quot;,
+            },
+        ]
+
+        response = await call_model(
+            prompt,
+            task.get(&quot;model&quot;),
+            response_format=&quot;json&quot;,
+        )
+        return response
+
+    async def revise_headers(self, task: dict, headers: dict):
+        prompt = [
+            {
+                &quot;role&quot;: &quot;system&quot;,
+                &quot;content&quot;: &quot;&quot;&quot;You are a research writer. 
+Your sole purpose is to revise the headers data based on the given guidelines.&quot;&quot;&quot;,
+            },
+            {
+                &quot;role&quot;: &quot;user&quot;,
+                &quot;content&quot;: f&quot;&quot;&quot;Your task is to revise the given headers JSON based on the guidelines given.
+You are to follow the guidelines but the values should be in simple strings, ignoring all markdown syntax.
+You must return nothing but a JSON in the same format as given in headers data.
+Guidelines: {task.get(&quot;guidelines&quot;)}\n
+Headers Data: {headers}\n
+&quot;&quot;&quot;,
+            },
+        ]
+
+        response = await call_model(
+            prompt,
+            task.get(&quot;model&quot;),
+            response_format=&quot;json&quot;,
+        )
+        return {&quot;headers&quot;: response}
+
+    async def run(self, research_state: dict):
+        if self.websocket and self.stream_output:
+            await self.stream_output(
+                &quot;logs&quot;,
+                &quot;writing_report&quot;,
+                f&quot;Writing final research report based on research data...&quot;,
+                self.websocket,
+            )
+        else:
+            print_agent_output(
+                f&quot;Writing final research report based on research data...&quot;,
+                agent=&quot;WRITER&quot;,
+            )
+
+        research_layout_content = await self.write_sections(research_state)
+
+        if research_state.get(&quot;task&quot;).get(&quot;verbose&quot;):
+            if self.websocket and self.stream_output:
+                research_layout_content_str = json.dumps(
+                    research_layout_content, indent=2
+                )
+                await self.stream_output(
+                    &quot;logs&quot;,
+                    &quot;research_layout_content&quot;,
+                    research_layout_content_str,
+                    self.websocket,
+                )
+            else:
+                print_agent_output(research_layout_content, agent=&quot;WRITER&quot;)
+
+        headers = self.get_headers(research_state)
+        if research_state.get(&quot;task&quot;).get(&quot;follow_guidelines&quot;):
+            if self.websocket and self.stream_output:
+                await self.stream_output(
+                    &quot;logs&quot;,
+                    &quot;rewriting_layout&quot;,
+                    &quot;Rewriting layout based on guidelines...&quot;,
+                    self.websocket,
+                )
+            else:
+                print_agent_output(
+                    &quot;Rewriting layout based on guidelines...&quot;, agent=&quot;WRITER&quot;
+                )
+            headers = await self.revise_headers(
+                task=research_state.get(&quot;task&quot;), headers=headers
+            )
+            headers = headers.get(&quot;headers&quot;)
+
+        return {**research_layout_content, &quot;headers&quot;: headers}
+
+</code></pre>
+<hr />
+<h3 id="multi_agentsagentspublisherpy">multi_agents/agents/publisher.py</h3>
+<pre><code class="language-python">from .utils.file_formats import \
+    write_md_to_pdf, \
+    write_md_to_word, \
+    write_text_to_md
+
+from .utils.views import print_agent_output
+
+
+class PublisherAgent:
+    def __init__(self, output_dir: str, websocket=None, stream_output=None, headers=None):
+        self.websocket = websocket
+        self.stream_output = stream_output
+        self.output_dir = output_dir
+        self.headers = headers or {}
+
+    async def publish_research_report(self, research_state: dict, publish_formats: dict):
+        layout = self.generate_layout(research_state)
+        await self.write_report_by_formats(layout, publish_formats)
+
+        return layout
+
+    def generate_layout(self, research_state: dict):
+        sections = '\n\n'.join(f&quot;{value}&quot;
+                                 for subheader in research_state.get(&quot;research_data&quot;)
+                                 for key, value in subheader.items())
+        references = '\n'.join(f&quot;{reference}&quot; for reference in research_state.get(&quot;sources&quot;))
+        headers = research_state.get(&quot;headers&quot;)
+        layout = f&quot;&quot;&quot;# {headers.get('title')}
+#### {headers.get(&quot;date&quot;)}: {research_state.get('date')}
+
+## {headers.get(&quot;introduction&quot;)}
+{research_state.get('introduction')}
+
+## {headers.get(&quot;table_of_contents&quot;)}
+{research_state.get('table_of_contents')}
+
+{sections}
+
+## {headers.get(&quot;conclusion&quot;)}
+{research_state.get('conclusion')}
+
+## {headers.get(&quot;references&quot;)}
+{references}
+&quot;&quot;&quot;
+        return layout
+
+    async def write_report_by_formats(self, layout:str, publish_formats: dict):
+        if publish_formats.get(&quot;pdf&quot;):
+            await write_md_to_pdf(layout, self.output_dir)
+        if publish_formats.get(&quot;docx&quot;):
+            await write_md_to_word(layout, self.output_dir)
+        if publish_formats.get(&quot;markdown&quot;):
+            await write_text_to_md(layout, self.output_dir)
+
+    async def run(self, research_state: dict):
+        task = research_state.get(&quot;task&quot;)
+        publish_formats = task.get(&quot;publish_formats&quot;)
+        if self.websocket and self.stream_output:
+            await self.stream_output(&quot;logs&quot;, &quot;publishing&quot;, f&quot;Publishing final research report based on retrieved data...&quot;, self.websocket)
+        else:
+            print_agent_output(output=&quot;Publishing final research report based on retrieved data...&quot;, agent=&quot;PUBLISHER&quot;)
+        final_research_report = await self.publish_research_report(research_state, publish_formats)
+        return {&quot;report&quot;: final_research_report}
+
+</code></pre>
+<hr />
+    </body>
+    </html>
+    
