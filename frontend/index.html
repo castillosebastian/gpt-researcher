@@ -12,10 +12,85 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/site/styles.css" />
     <style>
+        :root {
+            --color-sand: #fcf7ec;       /* Color arena suave para el fondo */
+            --color-sand-dark: #e6d5c3;  /* Arena más oscuro para elementos secundarios */
+            --color-gray-light: #f4f4f4; /* Gris claro para elementos de formulario */
+            --color-gray-medium: #666666;/* Gris medio para texto */
+            --color-gray-dark: #444444;  /* Gris oscuro para encabezados */
+            --color-gray-button: #8c8c8c; /* Nuevo color gris para el botón principal */
+        }
+
+        body {
+            background-color: var(--color-sand);
+            color: var(--color-gray-dark);
+        }
+
         .avatar {
             width: 80px;
             height: 80px;
             border-radius: 50%;
+            border: 3px solid var(--color-sand-dark);
+        }
+
+        .form-control {
+            background-color: var(--color-gray-light);
+            border: 1px solid var(--color-sand-dark);
+            color: var(--color-gray-dark);
+        }
+
+        .form-control:focus {
+            background-color: white;
+            border-color: var(--color-gray-medium);
+            box-shadow: 0 0 0 0.2rem rgba(102, 102, 102, 0.25);
+        }
+
+        .btn-primary {
+            background-color: var(--color-gray-button);
+            border-color: var(--color-gray-button);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #7a7a7a;
+            border-color: #7a7a7a;
+            color: white;
+        }
+
+        .btn-primary:focus {
+            box-shadow: 0 0 0 0.2rem rgba(140, 140, 140, 0.25);
+        }
+
+        .btn-secondary {
+            background-color: var(--color-sand-dark);
+            border-color: var(--color-sand-dark);
+            color: var(--color-gray-dark);
+        }
+
+        .btn-secondary:hover {
+            background-color: #d8c4b1;
+            border-color: #d8c4b1;
+            color: var(--color-gray-dark);
+        }
+
+        .margin-div {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .agent-question {
+            color: var(--color-gray-dark);
+            font-weight: 500;
+        }
+
+        .alert-info {
+            background-color: var(--color-gray-light);
+            border-color: var(--color-sand-dark);
+            color: var(--color-gray-dark);
         }
 
         .agent-name {
@@ -57,7 +132,7 @@
     </section> -->
 
     <main class="container" id="form">
-        <div class="agent-item"><img src="/static/gptr-logo.png" class="avatar" alt="Agente Automático"></div>
+        <div class="agent-item"><img src="/static/logo.png" class="avatar" alt="Agente Automático"></div>
         <form method="POST" class="mt-3" onsubmit="GPTResearcher.startResearch(); return false;">
             <div class="form-group">
                 <label for="task" class="agent-question">¿Qué te gustaría que investigue?</label>
